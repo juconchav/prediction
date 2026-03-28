@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Materia Future | Archivo Temporal</title>
+    
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#00ff41">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="icon" type="image/png" href="icon-192.png">
+
+    <style>
+        :root {
+            --neon: #00ff41; --bg: #050505; --card: #0a0a0a; --white: #ffffff;
+        }
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        
+        body { 
+            font-family: 'Courier New', Courier, monospace; background-color: var(--bg);
+            color: var(--neon); margin: 0; display: flex; flex-direction: column;
+            align-items: center; min-height: 100vh; padding: 20px;
+            justify-content: center;
+        }
+
+        .container { width: 100%; max-width: 400px; text-align: center; }
+        
+        /* Tarjeta para Captura de Pantalla / Instagram */
+        #capture-area {
+            background: var(--card); border: 1px solid var(--neon); padding: 45px 20px;
+            border-radius: 20px; margin-bottom: 25px; position: relative;
+            box-shadow: 0 0 40px rgba(0,255,65,0.1);
+            overflow: hidden;
+        }
+
+        .scan-anim {
+            position: absolute; width: 100%; height: 2px; background: var(--neon);
+            top: 0; left: 0; opacity: 0.2; animation: scan 4s linear infinite;
+        }
+        @keyframes scan { 0% { top: 0; } 100% { top: 100%; } }
+
+        .year-display { 
+            font-size: 5.5rem; font-weight: 900; color: var(--white); 
+            margin: 0; text-shadow: 0 0 15px var(--neon); 
+        }
+
+        .event-display { 
+            font-size: 1.3rem; margin-top: 25px; line-height: 1.5; 
+            min-height: 130px; font-style: italic; color: var(--neon);
+        }
+
+        /* Controles Mobile */
+        .controls { display: flex; flex-direction: column; gap: 12px; width: 100%; }
+        
+        input {
+            background: #111; border: 1px solid #333; color: var(--neon);
+            padding: 18px; font-size: 1.8rem; border-radius: 12px; 
+            text-align: center; outline: none; font-family: inherit;
+        }
+        input:focus { border-color: var(--neon); box-shadow: 0 0 10px rgba(0,255,65,0.2); }
+        
+        .btn-scan {
+            background: var(--neon); color: black; border: none; padding: 22px;
+            border-radius: 12px; font-weight: 900; font-size: 1.2rem; cursor: pointer;
+            text-transform: uppercase; letter-spacing: 2px; transition: transform 0.1s;
+        }
+        .btn-scan:active { transform: scale(0.95); }
+
+        .btn-wa {
+            background: #25d366; color: white; border: none; padding: 15px;
+            border-radius: 12px; text-decoration: none; font-weight: bold;
+            display: none; transition: opacity 0.3s; font-size: 0.9rem;
+        }
+
+        .footer-tag { font-size: 0.6rem; margin-top: 25px; opacity: 0.4; letter-spacing: 1px; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div style="font-size: 0.7rem; margin-bottom: 12px; letter-spacing: 3px; opacity: 0.8;">
+        SYSTEM_STATUS: ENCRYPTION_ACTIVE
+    </div>
+    
+    <div id="capture-area">
+        <div class="scan-anim"></div>
+        <div id="output">
+            <span class="year-display" id="disp-year">2087</span>
+            <p class="event-display" id="disp-event">"ESCANEO DE LÍNEA TEMPORAL REQUERIDO"</p>
+        </div>
+        <div style="font-size: 0.6rem; margin-top: 35px; border-top: 1px solid #1a1a1a; padding-top: 15px; opacity: 0.5;">
+            MATERIA_FUTURE_ARCHIVE | 2026-3000
+        </div>
+    </div>
+
+    <div class="controls">
+        <input type="number" id="year-in" value="2087" placeholder="AÑO">
+        <button class="btn-scan" onclick="scanTime()">INICIAR ESCANEO</button>
+        <button class="btn-wa" id="wa-btn" onclick="shareWA()">COMPARTIR EN WHATSAPP</button>
+    </div>
+
+    <p class="footer-tag">📸 CAPTURA</p>
+</div>
+
+<script>
+    // Configuración de Audio (Web Audio API)
+    const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+
+    function playFX(freq, type, duration, volume = 0.1) {
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.type = type;
+        osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+        gain.gain.setValueAtTime(volume, audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + duration);
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.start();
+        osc.stop(audioCtx.currentTime + duration);
+    }
+
+    // Base de datos expandida
+    const sujetos = ["La Red Neuronal Global", "El Gobierno de la IA Genesis", "La colonia civil de Marte", "El motor de curvatura espacial", "La ciudad submarina de Atlantia", "El primer cyborg consciente", "La alianza comercial de Júpiter", "El último satélite terrestre", "El protocolo de telepatía digital", "Bio-hackers del sector 7", "El sistema de criogenia masiva", "La federación lunar unificada", "Un virus de datos sensible"];
+    const acciones = ["toma el control total de", "establece conexión con", "descifra el origen de", "finaliza la construcción de", "declara la soberanía en", "abre un portal dimensional en", "sustituye la moneda biológica por", "logra la inmortalidad digital en", "prohíbe el acceso humano a", "detecta señales de vida en"];
+    const objetos = ["el cinturón de asteroides", "la conciencia colectiva", "el núcleo de Europa", "la red energética del Sol", "los restos de la internet antigua", "la atmósfera densa de Venus", "el mercado de memorias implantadas", "la nube de datos cuánticos", "el océano subterráneo de Marte", "la antigua red de satélites GPS"];
+
+    function scanTime() {
+        const year = document.getElementById('year-in').value;
+        const outYear = document.getElementById('disp-year');
+        const outEvent = document.getElementById('disp-event');
+        const waBtn = document.getElementById('wa-btn');
+
+        // FX: Sonido de inicio y vibración
+        playFX(600, 'square', 0.1);
+        if (navigator.vibrate) navigator.vibrate(60);
+
+        if(year < 2027) {
+            outEvent.innerText = "ACCESO DENEGADO: REGISTRO NO ENCONTRADO";
+            return;
+        }
+
+        outEvent.innerText = "DECODIFICANDO...";
+        
+        setTimeout(() => {
+            // FX: Sonido de éxito
+            playFX(440, 'sine', 0.15);
+            setTimeout(() => playFX(880, 'sine', 0.2), 80);
+
+            // Generador determinista basado en el año y el día actual
+            const seed = Math.abs((year * 7) + (new Date().getDate() * 19));
+            const evento = `${sujetos[seed % sujetos.length]} ${acciones[(seed+3) % acciones.length]} ${objetos[(seed*2) % objetos.length]}.`;
+            
+            outYear.innerText = year;
+            outEvent.innerText = `"${evento}"`;
+            waBtn.style.display = "block";
+        }, 900);
+    }
+
+    function shareWA() {
+        playFX(1000, 'sine', 0.05);
+        const year = document.getElementById('disp-year').innerText;
+        const event = document.getElementById('disp-event').innerText;
+        const text = `🔮 *PROFECÍA DEL FUTURO* 🔮%0A%0A📅 *Año:* ${year}%0A🚀 *Evento:* ${event}%0A%0A_Generado en Materia Future Archive_`;
+        window.open(`https://wa.me/?text=${text}`, '_blank');
+    }
+
+    // Registro del Service Worker para instalación en Android
+    if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+            navigator.serviceWorker.register('sw.js').catch(err => console.log('SW fail', err));
+        });
+    }
+</script>
+
+</body>
+</html>
