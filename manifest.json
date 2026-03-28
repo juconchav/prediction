@@ -1,22 +1,23 @@
 {
-  "short_name": "Futuro",
-  "name": "Archivo Temporal",
+  "name": "2027 Future Archive",
+  "short_name": "2027+",
+  "description": "Explora predicciones futuras.",
+  "start_url": "index.html",
+  "display": "standalone",
+  "background_color": "#050505",
+  "theme_color": "#00ff41",
+  "orientation": "portrait",
   "icons": [
     {
       "src": "futuro.png",
+      "sizes": "192x192",
       "type": "image/png",
-      "sizes": "192x192"
+      "purpose": "any maskable"
     },
     {
       "src": "futuro.png",
-      "type": "image/png",
-      "sizes": "512x512"
+      "sizes": "512x512",
+      "type": "image/png"
     }
-  ],
-  "start_url": "./index.html",
-  "background_color": "#050505",
-  "display": "standalone",
-  "scope": "./",
-  "theme_color": "#00ff41",
-  "description": "Explora eventos históricos del futuro desde tu dispositivo."
+  ]
 }
